@@ -433,7 +433,7 @@ end
 local LootHelperFrame = CreateFrame("Frame", "ShaguLootHelper", UIParent)
 LootHelperFrame:SetWidth(320)
 LootHelperFrame:SetHeight(200)
---LootHelperFrame:SetPoint("TOPLEFT", LootFrame, "TOPRIGHT", 10, 0)
+LootHelperFrame:SetPoint("TOPLEFT", LootFrame, "TOPRIGHT", 10, 0)
 LootHelperFrame:Hide()
 -- Gör fönstret flyttbart
 LootHelperFrame:SetMovable(true)
@@ -466,7 +466,7 @@ end)
 -- tooltip
 LootHelperFrame.settingsBtn:SetScript("OnEnter", function()
     GameTooltip:SetOwner(LootHelperFrame.settingsBtn, "ANCHOR_RIGHT")
-    GameTooltip:SetText("Settings", 1, 1, 1)
+    GameTooltip:SetText("Manage", 1, 1, 1)
     GameTooltip:Show()
 end)
 
@@ -492,7 +492,7 @@ LootHelperFrame.count = 0
 LootHelperFrame.title = LootHelperFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 LootHelperFrame.title:SetFont("Fonts\\FRIZQT__.TTF", 14, "OUTLINE")
 LootHelperFrame.title:SetPoint("TOP", 0, -8)
-LootHelperFrame.title:SetText("ALLWAYS?")
+LootHelperFrame.title:SetText("ALWAYS?")
 
 local function ClearLootHelper()
     for _, row in pairs(LootHelperFrame.items) do
