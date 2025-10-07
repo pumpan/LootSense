@@ -37,7 +37,11 @@ When you loot an item, LootSense opens a small decision frame that gives you the
 Next time you loot an item you've marked, LootSense will automatically perform the chosen action — saving you time, bag space, and sanity.
 
 And if you change your mind later, there’s a handy **Settings** menu accessible via `/sj list` or from the top-right corner of the decision frame, where you can easily modify or remove saved preferences.
-
+<p align="center">
+  <img src="/LootSense/keep.jpg" alt="Keep Button" width="250">
+  <img src="/LootSense/vendor.jpg" alt="Vendor Button" width="250">
+  <img src="/LootSense/delete.jpg" alt="Delete Button" width="250">
+</p>
 ---
 
 ## 🛠️ Installation
@@ -84,11 +88,6 @@ And if you change your mind later, there’s a handy **Settings** menu accessibl
 * 🧩 **Clean Frame Logic:**
   The decision frame disappears automatically when all items have been handled.
 
-<p align="center">
-  <img src="/LootSense/keep.jpg" alt="Keep Button" width="180">
-  <img src="/LootSense/vendor.jpg" alt="Vendor Button" width="180">
-  <img src="/LootSense/delete.jpg" alt="Delete Button" width="180">
-</p>
 
 ---
 
@@ -112,7 +111,9 @@ And if you change your mind later, there’s a handy **Settings** menu accessibl
 
 4. **Changing Your Mind:**
    Access the **Settings** via `/sj list` or the button in the top-right corner of the loot decision frame to modify or clear saved choices.
-
+<p align="center">
+  <img src="/LootSense/manage.jpg" alt="Keep Button" width="250">
+</p>
 ---
 
 ## 🗾 Example Workflow
