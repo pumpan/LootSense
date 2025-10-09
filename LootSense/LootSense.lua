@@ -31,27 +31,34 @@ local colors = {
 -- ##################################################
 -- ## AUTODELETE
 -- ##################################################
-local autodelete = CreateFrame("Frame")
-autodelete:RegisterEvent("ITEM_PUSH")
-autodelete:SetScript("OnEvent", function() autodelete:Show() end)
 
-autodelete:SetScript("OnUpdate", function()
-    if (this.tick or 1) > GetTime() then return else this.tick = GetTime() + 0.1 end
+local AutoTrash = CreateFrame("Frame", "AutoTrashFrame", UIParent)
+AutoTrash:RegisterEvent("ITEM_PUSH")
 
-    for bag = 0, 4 do
-        for slot = 1, GetContainerNumSlots(bag) do
-            local link = GetContainerItemLink(bag, slot)
+AutoTrash:SetScript("OnEvent", function()
+    AutoTrash.active = true
+    AutoTrash:Show()
+end)
+
+AutoTrash:SetScript("OnUpdate", function()
+    if (this.nextScan or 0) > GetTime() then return end
+    this.nextScan = GetTime() + 0.15
+
+    for bagIndex = 0, 4 do
+        for slotIndex = 1, GetContainerNumSlots(bagIndex) do
+            local link = GetContainerItemLink(bagIndex, slotIndex)
             if link then
-                local _, _, raw = string.find(link, "(item:%d+:%d+:%d+:%d+)")
-                local itemName = raw and GetItemInfo(raw)
-                if itemName then itemName = string.lower(itemName) end
-
+                local _, _, itemString = string.find(link, "(item:%d+:%d+:%d+:%d+)")
+                local itemName = itemString and GetItemInfo(itemString)
                 if itemName then
-                    for i = 1, table.getn(LootSense_delete) do
-                        local entry = LootSense_delete[i]
-                        if entry.name and string.lower(entry.name) == itemName then
+                    local lowerName = string.lower(itemName)
+
+                    -- loop through trash list
+                    for n = 1, table.getn(LootSense_delete) do
+                        local data = LootSense_delete[n]
+                        if data.name and string.lower(data.name) == lowerName then
                             ClearCursor()
-                            PickupContainerItem(bag, slot)
+                            PickupContainerItem(bagIndex, slotIndex)
                             DeleteCursorItem()
                             return
                         end
@@ -61,8 +68,9 @@ autodelete:SetScript("OnUpdate", function()
         end
     end
 
-    autodelete:Hide()
+    this:Hide()
 end)
+
 
 
 -- ##################################################
@@ -90,6 +98,54 @@ LootSenseList.closeBtn:SetText("X")
 LootSenseList.closeBtn:SetPoint("TOPRIGHT", -5, -5)
 LootSenseList.closeBtn:SetScript("OnClick", function()
     LootSenseList:Hide()
+end)
+
+-- === AUTO DELETE CHECKBOXAR ===
+-- Grå items
+LootSenseList.grayCheck = CreateFrame("CheckButton", "LootSenseGrayCheck", LootSenseList, "UICheckButtonTemplate")
+LootSenseList.grayCheck:SetPoint("TOPLEFT", 10, -10)
+LootSenseList.grayCheck:SetWidth(24)
+LootSenseList.grayCheck:SetHeight(24)
+LootSenseList.grayCheck.text = LootSenseList.grayCheck:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+LootSenseList.grayCheck.text:SetPoint("LEFT", LootSenseList.grayCheck, "RIGHT", 4, 0)
+LootSenseList.grayCheck.text:SetText("Auto delete gray items")
+
+-- Grön items
+LootSenseList.greenCheck = CreateFrame("CheckButton", "LootSenseGreenCheck", LootSenseList, "UICheckButtonTemplate")
+LootSenseList.greenCheck:SetPoint("TOPLEFT", 10, -35)
+LootSenseList.greenCheck:SetWidth(24)
+LootSenseList.greenCheck:SetHeight(24)
+LootSenseList.greenCheck.text = LootSenseList.greenCheck:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+LootSenseList.greenCheck.text:SetPoint("LEFT", LootSenseList.greenCheck, "RIGHT", 4, 0)
+LootSenseList.greenCheck.text:SetText("Auto delete green items")
+
+-- Initiera variabler om de saknas
+if not LootSense_autoDeleteGray then LootSense_autoDeleteGray = "off" end
+if not LootSense_autoDeleteGreen then LootSense_autoDeleteGreen = "off" end
+
+-- Ställ in checkboxarna efter sparade värden
+LootSenseList.grayCheck:SetChecked(LootSense_autoDeleteGray == "on")
+LootSenseList.greenCheck:SetChecked(LootSense_autoDeleteGreen == "on")
+
+-- Klick-händelser
+LootSenseList.grayCheck:SetScript("OnClick", function()
+    if this:GetChecked() then
+        LootSense_autoDeleteGray = "on"
+        DEFAULT_CHAT_FRAME:AddMessage("|cffaaaaaa[LootSense]|r Auto-delete gray items: |cff33ff33ON|r")
+    else
+        LootSense_autoDeleteGray = "off"
+        DEFAULT_CHAT_FRAME:AddMessage("|cffaaaaaa[LootSense]|r Auto-delete gray items: |cffff3333OFF|r")
+    end
+end)
+
+LootSenseList.greenCheck:SetScript("OnClick", function()
+    if this:GetChecked() then
+        LootSense_autoDeleteGreen = "on"
+        DEFAULT_CHAT_FRAME:AddMessage("|cff55ff55[LootSense]|r Auto-delete green items: |cff33ff33ON|r")
+    else
+        LootSense_autoDeleteGreen = "off"
+        DEFAULT_CHAT_FRAME:AddMessage("|cff55ff55[LootSense]|r Auto-delete green items: |cffff3333OFF|r")
+    end
 end)
 
 
@@ -357,61 +413,9 @@ end
 -- ##################################################
 -- ## SLASH COMMANDS
 -- ##################################################
-SLASH_LootSense1, SLASH_LootSense2, SLASH_LootSense3 = "/sjunk", "/junk", "/sj"
-SlashCmdList["LootSense"] = function(message)
-    local commandlist = {}
-    for command in gfind(message, "[^ ]+") do
-        table.insert(commandlist, string.lower(command))
-    end
 
-    local function addToList(list, addstring)
-        local _, _, itemLink = string.find(addstring, "(item:%d+:%d+:%d+:%d+)")
-        local itemName = itemLink and GetItemInfo(itemLink)
-        addstring = itemName or addstring
-        table.insert(list, string.lower(addstring))
-        DEFAULT_CHAT_FRAME:AddMessage("=> added |cff33ffcc".. addstring .."|r")
-    end
 
-    if commandlist[1] == "keep" then
-        addToList(LootSense_keep, table.concat(commandlist," ",2))
-    elseif commandlist[1] == "vendor" then
-        addToList(LootSense_vendor, table.concat(commandlist," ",2))
-    elseif commandlist[1] == "delete" then
-        addToList(LootSense_delete, table.concat(commandlist," ",2))
-    elseif commandlist[1] == "ls" then
-        DEFAULT_CHAT_FRAME:AddMessage("|cff33ee33Keep Items:")
-        for id, item in pairs(LootSense_keep) do
-            DEFAULT_CHAT_FRAME:AddMessage("  [k"..id.."] "..item)
-        end
-        DEFAULT_CHAT_FRAME:AddMessage("|cff33ee33Vendor Items:")
-        for id, item in pairs(LootSense_vendor) do
-            DEFAULT_CHAT_FRAME:AddMessage("  [v"..id.."] "..item)
-        end
-        DEFAULT_CHAT_FRAME:AddMessage("|cffaa3333Delete Items:")
-        for id, item in pairs(LootSense_delete) do
-            DEFAULT_CHAT_FRAME:AddMessage("  [d"..id.."] "..item)
-        end
-
-		if not LootSenseListFrame then
-			LootSenseListFrame() -- funktionen som bygger scrollframe + sökfält
-		end
-		if LootSenseListFrame:IsShown() then
-			LootSenseListFrame:Hide()
-		else
-			LootSenseListFrame:Show()
-			RefreshLootSenseList() -- uppdatera innehållet i listan
-		end
-		
-    else
-        DEFAULT_CHAT_FRAME:AddMessage("Usage:")
-        DEFAULT_CHAT_FRAME:AddMessage("/sj keep <item>   - keep item (always loot)")
-        DEFAULT_CHAT_FRAME:AddMessage("/sj vendor <item> - auto vendor item")
-        DEFAULT_CHAT_FRAME:AddMessage("/sj delete <item> - auto delete item")
-        DEFAULT_CHAT_FRAME:AddMessage("/sj ls             - show lists")
-    end
-end
-
-SLASH_LootSenseLIST1 = "/sk"
+SLASH_LootSenseLIST1 = "/ls"
 SlashCmdList["LootSenseLIST"] = function(msg)
     local cmd = string.lower(msg or "")
     if cmd == "list" then
@@ -604,7 +608,7 @@ btn:SetScript("OnClick", function()
     
     -- Aktivera autodelete OM det är delete-knappen
     if action == "throw" then
-        autodelete:Show()
+        AutoTrash:Show()
     end
     
     row:Hide()
@@ -660,6 +664,26 @@ lootFrame:SetScript("OnEvent", function()
                 local name = GetItemInfo(itemLink) or itemName
                 if not name then name = itemName end
 
+				-- kolla om automatisk radering är aktiverad
+				if LootSense_autoDeleteGray == "on" or LootSense_autoDeleteGreen == "on" then
+					-- grå items (poor quality)
+					if LootSense_autoDeleteGray == "on" and quality == 0 then
+						table.insert(LootSense_delete, { id = itemID, name = name })
+						LootSlot(slot)
+						DEFAULT_CHAT_FRAME:AddMessage("|cffff5555Auto-deleted gray:|r " .. name)
+						return
+					end
+
+					-- gröna items (uncommon quality)
+					if LootSense_autoDeleteGreen == "on" and quality == 2 then
+						table.insert(LootSense_delete, { id = itemID, name = name })
+						LootSlot(slot)
+						DEFAULT_CHAT_FRAME:AddMessage("|cff55ff55Auto-deleted green:|r " .. name)
+						return
+					end
+				end
+
+
                 -- extract numeric itemID
                 local itemID
                 local _, _, id = string.find(itemLink, "item:(%d+):")
@@ -690,35 +714,44 @@ end)
 
 
 -- ##################################################
--- ## AUTOVENDOR
+-- ## AutoSell
 -- ##################################################
-local autovendor = CreateFrame("Frame")
-autovendor:RegisterEvent("MERCHANT_SHOW")
-autovendor:RegisterEvent("MERCHANT_CLOSED")
-autovendor:SetScript("OnEvent", function()
-    if event == "MERCHANT_CLOSED" then
-        autovendor.merchant = nil
-        autovendor:Hide()
-    elseif event == "MERCHANT_SHOW" then
-        autovendor.merchant = true
-        autovendor:Show()
+
+local AutoSell = CreateFrame("Frame")
+AutoSell:RegisterEvent("MERCHANT_SHOW")
+AutoSell:RegisterEvent("MERCHANT_CLOSED")
+
+-- internal state
+AutoSell.active = false
+AutoSell.lastCheck = 0
+
+-- event handling
+AutoSell:SetScript("OnEvent", function()
+    if event == "MERCHANT_SHOW" then
+        AutoSell.active = true
+        AutoSell:Show()
+    elseif event == "MERCHANT_CLOSED" then
+        AutoSell.active = false
+        AutoSell:Hide()
     end
 end)
 
-autovendor:SetScript("OnUpdate", function()
-    if (this.tick or 1) > GetTime() then return else this.tick = GetTime() + 0.1 end
+-- main loop
+AutoSell:SetScript("OnUpdate", function()
+    -- tick timer, check every 0.1s
+    if GetTime() < AutoSell.lastCheck then return end
+    AutoSell.lastCheck = GetTime() + 0.1
 
-    if not autovendor.merchant then return end
+    if not AutoSell.active then return end
 
     for bag = 0, 4 do
         for slot = 1, GetContainerNumSlots(bag) do
             local link = GetContainerItemLink(bag, slot)
             if link then
-                local _, _, raw = string.find(link, "(item:%d+:%d+:%d+:%d+)")
-                local itemName = raw and GetItemInfo(raw)
-                if itemName then itemName = string.lower(itemName) end
-
+                local _, _, rawLink = string.find(link, "(item:%d+:%d+:%d+:%d+)")
+                local itemName = rawLink and GetItemInfo(rawLink)
                 if itemName then
+                    itemName = string.lower(itemName)
                     for i = 1, table.getn(LootSense_vendor) do
                         local entry = LootSense_vendor[i]
                         if entry.name and string.lower(entry.name) == itemName then
@@ -732,7 +765,8 @@ autovendor:SetScript("OnUpdate", function()
         end
     end
 
-    autovendor:Hide()
+    -- hide when done selling
+    AutoSell:Hide()
 end)
 
 
