@@ -42,7 +42,16 @@ And if you change your mind later, there’s a handy **Settings** menu accessibl
   <img src="/LootSense/vendor.jpg" alt="Vendor Button" width="250">
   <img src="/LootSense/delete.jpg" alt="Delete Button" width="250">
 </p>
----
+
+## ⚠️ Warning
+
+**LootSense** is a powerful automation addon that can automatically delete, vendor, or loot items based on your preferences.
+Use it responsibly automated deletion is permanent and **cannot be undone**.
+
+Before enabling any auto-delete settings, double-check your lists to make sure no valuable or rare items will be removed.
+The author takes no responsibility for lost items due to incorrect configuration or misuse.
+
+If you want to temporarily disable all automatic actions, use the “Pause LootSense” option under the Settings tab.
 
 ## 🛠️ Installation
 
