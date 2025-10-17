@@ -36,11 +36,15 @@ When you loot an item, LootSense opens a small decision frame that gives you the
 
 Next time you loot an item you've marked, LootSense will automatically perform the chosen action — saving you time, bag space, and sanity.
 
-And if you change your mind later, there’s a handy **Settings** menu accessible via `/sj list` or from the top-right corner of the decision frame, where you can easily modify or remove saved preferences.
+And if you change your mind later, there’s a handy **Settings** menu accessible via the minimap button 
 <p align="center">
-  <img src="/LootSense/keep.jpg" alt="Keep Button" width="250">
-  <img src="/LootSense/vendor.jpg" alt="Vendor Button" width="250">
-  <img src="/LootSense/delete.jpg" alt="Delete Button" width="250">
+  <img src="/LootSense/Screens/minimap.png" alt="Keep Button" width="25">
+</p>
+
+<p align="center">
+  <img src="/LootSense/Screens/keep.jpg" alt="Keep Button" width="250">
+  <img src="/LootSense/Screens/vendor.jpg" alt="Vendor Button" width="250">
+  <img src="/LootSense/Screens/delete.jpg" alt="Delete Button" width="250">
 </p>
 
 ## ⚠️ Warning
@@ -119,9 +123,13 @@ If you want to temporarily disable all automatic actions, use the “Pause LootS
    * Items marked **Delete** are destroyed automatically upon looting.
 
 4. **Changing Your Mind:**
-   Access the **Settings** via `/sj list` or the button in the top-right corner of the loot decision frame to modify or clear saved choices.
+
 <p align="center">
-  <img src="/LootSense/manage.jpg" alt="Keep Button" width="250">
+  <img src="/LootSense/Screens/minimap.png" alt="Keep Button" width="25">
+</p>
+   Access the **Settings** via the minimap button or "/ls list" or the button in the top-right corner of the loot decision frame to modify or clear saved choices.
+<p align="center">
+  <img src="/LootSense/Screens/manage.jpg" alt="Keep Button" width="250">
 </p>
 ---
 
