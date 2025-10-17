@@ -3,5 +3,5 @@
 ## Author: Pumpan
 ## Notes: Automatically deletes or vendors specified items
 ## Version: 1.0
-## SavedVariablesPerCharacter: LootSense_vendor, LootSense_delete, LootSense_keep, LootSense_autoDeleteGray, LootSense_autoDeleteGreen
+## SavedVariablesPerCharacter: LootSense_vendor, LootSense_delete, LootSense_keep, LootSense_autoDelete, LootSense_MinimapPos, LootSense_paused
 LootSense.lua
