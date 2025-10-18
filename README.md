@@ -60,10 +60,11 @@ If you want to temporarily disable all automatic actions, use the “Pause LootS
 ## 🛠️ Installation
 
 1. **Download LootSense:**
+
 [![⬇ DOWNLOAD](https://img.shields.io/github/downloads/pumpan/LootSense/total?style=for-the-badge&color=00b4d8&label=⬇+DOWNLOAD)](https://github.com/pumpan/LootSense/releases)
 
 
-2. **Extract Files:**
+3. **Extract Files:**
 
    * Extract the contents into your WoW AddOns folder:
 
@@ -76,7 +77,7 @@ If you want to temporarily disable all automatic actions, use the “Pause LootS
      LootSense
      ```
 
-3. **Enable LootSense:**
+4. **Enable LootSense:**
 
    * Start WoW and enable the addon from the AddOns menu on the character selection screen.
 
